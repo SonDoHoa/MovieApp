@@ -25,6 +25,8 @@ class MainActivity : AppCompatActivity(){
         private val TAG = MainActivity::class.java.simpleName
         private val PREFERENCE_NAME = "SETTING_FILES"
         val NAME_FRAGMENT_KEY = "NAME_FRAGMENT_KEY"
+        val API_KEY = "7a235f9906576cd3b948876d891c875e"
+        val BASE_URL = "https://api.themoviedb.org/3/"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
