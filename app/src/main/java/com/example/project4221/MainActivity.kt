@@ -52,10 +52,10 @@ class MainActivity : AppCompatActivity(){
             bottomNavigation.selectedItemId = R.id.NowPlaying
         }else if (fragmentKey == "TOP_RATING"){
             setCurrentFragment(
-                TopRatingFragment(
-                    false,
-                    database
-                ), tag = "TOP_RATNG")
+                    TopRatingFragment(
+                            false,
+                            database
+                    ), tag = "TOP_RATNG")
             bottomNavigation.selectedItemId = R.id.TopRating
         }else if (fragmentKey == "MY_FAVORITE"){
             setCurrentFragment(
@@ -78,10 +78,10 @@ class MainActivity : AppCompatActivity(){
                 }
                 R.id.TopRating -> {
                     setCurrentFragment(
-                        TopRatingFragment(
-                            false,
-                            database
-                        ), "TOP_RATNG")
+                            TopRatingFragment(
+                                    false,
+                                    database
+                            ), "TOP_RATNG")
                     prefEditor.putString(NAME_FRAGMENT_KEY, "TOP_RATING")
                     prefEditor.apply()
                 }
@@ -130,7 +130,7 @@ class MainActivity : AppCompatActivity(){
                 val topRating = supportFragmentManager.findFragmentByTag("TOP_RATNG")
                 if (topRating != null && topRating.isVisible){
                     topRatingFragment =
-                        TopRatingFragment(true, database)
+                            TopRatingFragment(true, database)
                     supportFragmentManager
                             .beginTransaction()
                             .replace(R.id.flFragment, topRatingFragment, "TOP_RATNG")
@@ -162,7 +162,7 @@ class MainActivity : AppCompatActivity(){
                 val topRating = supportFragmentManager.findFragmentByTag("TOP_RATNG")
                 if (topRating != null && topRating.isVisible){
                     topRatingFragment =
-                        TopRatingFragment(false, database)
+                            TopRatingFragment(false, database)
                     supportFragmentManager
                             .beginTransaction()
                             .replace(R.id.flFragment, topRatingFragment,"TOP_RATNG")

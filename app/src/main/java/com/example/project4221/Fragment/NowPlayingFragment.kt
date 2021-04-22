@@ -10,10 +10,13 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.project4221.*
+import com.example.project4221.API.MovieService
 import com.example.project4221.Model.*
 import com.example.project4221.Room.MoviesDatabase
 import com.google.gson.Gson
 import com.khtn.androidcamp.DataCenter.Companion.getNowPlayingMovieJson
+import retrofit2.Call
+import retrofit2.Response
 
 
 class NowPlayingFragment(val Type: Boolean, val database: MoviesDatabase) : BaseFragment() {
@@ -39,14 +42,14 @@ class NowPlayingFragment(val Type: Boolean, val database: MoviesDatabase) : Base
         if(Type) {
             adapter = MovieAdapter(
                 requireActivity(),
-                ConvertJsonToList(),
+                getDataFromApi(),
                 0, database
             )
             rvNowPlaying.layoutManager = GridLayoutManager(activity,3)
         } else {
             adapter = MovieAdapter(
                 requireActivity(),
-                ConvertJsonToList(),
+                getDataFromApi(),
                 1,
                 database)
             rvNowPlaying.layoutManager = LinearLayoutManager(activity)
@@ -65,6 +68,36 @@ class NowPlayingFragment(val Type: Boolean, val database: MoviesDatabase) : Base
         val dates: Result = Gson().fromJson(getNowPlayingMovieJson(), Result::class.java)
         dates.results?.let { movies.addAll(it) }
         return movies
+    }
+
+    companion object{
+        var listMovie = ArrayList<Movies>()
+    }
+
+    private fun getDataFromApi(): ArrayList<Movies> {
+        MovieService.getApi().getNowPlaying().enqueue(object : retrofit2.Callback<Result> {
+            override fun onFailure(call: Call<Result>, t: Throwable) {
+                Log.e("MainActivity", "Problem calling Github API ${t?.message}")
+            }
+
+            override fun onResponse(call: Call<Result>, response: Response<Result>) {
+                response?.let {
+                    val resp = it.body()
+                    Log.e("TAG", "ok ok ok ${resp?.results}")
+
+                    for (e: Movies in resp?.results!!){
+                        val mv = Movies()
+                        mv.id = e.id
+                        mv.title = e.title
+                        mv.overview = e.overview
+                        mv.poster_path = e.poster_path
+                        listMovie.add(mv)
+                    }
+                }
+            }
+
+        })
+        return listMovie
     }
 
     private fun startDetailScreen(movies: Movies){

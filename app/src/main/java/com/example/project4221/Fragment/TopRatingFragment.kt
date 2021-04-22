@@ -9,31 +9,27 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.project4221.*
 import com.example.project4221.API.MovieService
+import com.example.project4221.DetailMovieActivity
 import com.example.project4221.Model.*
+import com.example.project4221.MovieAdapter
+import com.example.project4221.R
 import com.example.project4221.Room.MoviesDatabase
 import com.google.gson.Gson
 import com.khtn.androidcamp.DataCenter
 import retrofit2.Call
 import retrofit2.Response
-import javax.security.auth.callback.Callback
-import javax.security.auth.callback.CallbackHandler
 
-class TopRatingFragment(val Type: Boolean, val database: MoviesDatabase) : BaseFragment() {
-
-
-    var listMovie = ArrayList<Movies>()
+class TopRatingFragment (val Type: Boolean, val database: MoviesDatabase): BaseFragment(){
 
     override fun getLoggerTag(): String {
         return TopRatingFragment::class.java.simpleName
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+            inflater: LayoutInflater, container: ViewGroup?,
+            savedInstanceState: Bundle?
     ): View? {
-        getDataFromApi()
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_top_rating, container, false)
     }
@@ -46,25 +42,15 @@ class TopRatingFragment(val Type: Boolean, val database: MoviesDatabase) : BaseF
         val adapter: MovieAdapter
 
         if(Type) {
-            adapter = MovieAdapter(
-                requireActivity(),
-                listMovie,
-                0,
-                database
-            )
+            adapter = MovieAdapter(requireActivity(), getDataFromApi(), 0, database)
             rvTopRating.layoutManager = GridLayoutManager(activity,3)
         } else {
-            adapter = MovieAdapter(
-                requireActivity(),
-                listMovie,
-                1,
-                database
-            )
+            adapter = MovieAdapter(requireActivity(), getDataFromApi(), 1, database)
             rvTopRating.layoutManager = LinearLayoutManager(activity)
         }
         rvTopRating.adapter = adapter
         adapter.Listener = object :
-            MovieAdapter.MoviesListener {
+                MovieAdapter.MoviesListener {
             override fun onClickListener(movies: Movies) {
                 startDetailScreen(movies)
             }
@@ -75,29 +61,37 @@ class TopRatingFragment(val Type: Boolean, val database: MoviesDatabase) : BaseF
         var movies = ArrayList<Movies>()
         val dates: Result = Gson().fromJson(DataCenter.getTopRateMovieJson(), Result::class.java)
         dates.results?.let { movies.addAll(it) }
-        getDataFromApi()
         return movies
     }
 
-    fun getDataFromApi(){
+    companion object{
+        var listMovie = ArrayList<Movies>()
+    }
+
+    private fun getDataFromApi(): ArrayList<Movies> {
         MovieService.getApi().getTopRating().enqueue(object : retrofit2.Callback<Result> {
-            override fun onFailure(call: Call<Result>?, t: Throwable?) {
-                //todo something
+            override fun onFailure(call: Call<Result>, t: Throwable) {
+                Log.e("MainActivity", "Problem calling Github API ${t?.message}")
             }
 
-            override fun onResponse(
-                call: Call<Result>?,
-                response: Response<Result>?
-            ) {
+            override fun onResponse(call: Call<Result>, response: Response<Result>) {
                 response?.let {
                     val resp = it.body()
-                    Log.e("TAG", "data: ${resp?.results}")
-//                    val dates: Result = Gson().fromJson(resp?.results, Result::class.java)
-//                    dates.results?.let { listMovie.addAll(it) }
+                    Log.e("TAG", "ok ok ok ${resp?.results}")
+
+                    for (e: Movies in resp?.results!!){
+                        val mv = Movies()
+                        mv.id = e.id
+                        mv.title = e.title
+                        mv.overview = e.overview
+                        mv.poster_path = e.poster_path
+                        listMovie.add(mv)
+                    }
                 }
             }
 
         })
+        return listMovie
     }
 
     private fun startDetailScreen(movies: Movies){
