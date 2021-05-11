@@ -14,7 +14,6 @@ import com.example.project4221.Fragment.TopRatingFragment
 import com.example.project4221.Room.MoviesDatabase
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
-const val TYPE_VIEW = "TYPE_VIEW"
 
 class MainActivity : AppCompatActivity(){
     lateinit var nowPlayingFragment: NowPlayingFragment
